@@ -1,8 +1,40 @@
 <?php
-$command = "java LibraryManager view";
-$output = shell_exec($command);
+$csvFile = 'books.csv';
 
-$books = explode("\n", trim($output));
+if (!file_exists($csvFile) || filesize($csvFile) == 0) {
+    $message = "<div class='alert alert-warning'>No books found. Add some books to get started!</div>";
+} else {
+    $file = fopen($csvFile, 'r');
+
+    $table = "<table class='table table-striped'>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>ISBN</th>
+                        <th>Genre</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>";
+
+    while (($data = fgetcsv($file)) !== FALSE) {
+        if (count($data) < 4) {
+            continue;
+        }
+
+        $table .= "<tr>";
+        foreach ($data as $value) {
+            $table .= "<td>$value</td>";
+        }
+        $table .= "<td><a href='delete_book.php?isbn={$data[2]}' class='btn btn-danger'>Delete</a></td>";
+        $table .= "</tr>";
+    }
+
+    $table .= "</tbody></table>";
+
+    fclose($file);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,35 +48,17 @@ $books = explode("\n", trim($output));
 <body>
     <div class="container mt-5">
         <h1 class="text-center mb-4">Library Management System</h1>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Author</th>
-                    <th>ISBN</th>
-                    <th>Genre</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                foreach ($books as $book) {
-                    $data = explode(",", $book);
-                    echo "<tr>";
-                    foreach ($data as $value) {
-                        echo "<td>$value</td>";
-                    }
-                    echo "<td><a href='delete_book.php?isbn={$data[2]}' class='btn btn-danger'>Delete</a></td>";
-                    echo "</tr>";
-                }
-                ?>
-            </tbody>
-        </table>
-        <a href="add_book.php" class="btn btn-success">Add New Book</a>
-    </div>
-    
-    <div class="text-center mt-4">
-        <a href="search_book.php" class="btn btn-info">Search Books</a>
+        <?php
+        if (isset($message)) {
+            echo $message;
+        } else {
+            echo $table;
+        }
+        ?>
+        <div class="text-center mt-4">
+            <a href="add_book.php" class="btn btn-success">Add New Book</a>
+            <a href="search_book.php" class="btn btn-info">Search Books</a>
+        </div>
     </div>
 </body>
 </html>

@@ -44,5 +44,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit" class="btn btn-primary">Add Book</button>
         </form>
     </div>
+    <div>
+        <a href="index.php">Go Back!</a>
+    </div>
 </body>
 </html>

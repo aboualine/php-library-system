@@ -6,6 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $command = "java LibraryManager search $query";
     $output = shell_exec($command);
 
+    // Parse the output and display it in a table
     $books = explode("\n", trim($output));
 }
 ?>
